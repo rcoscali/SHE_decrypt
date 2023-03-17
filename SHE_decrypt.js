@@ -56,7 +56,8 @@
             var aesCbc = new aesjs.ModeOfOperation.cbc(aesjs.utils.hex.toBytes(dk.toString('hex')), aesjs.utils.hex.toBytes(SHE_decrypt.prototype.bufferIV.toString('hex')));
             var m2Str = aesCbc.decrypt(aesjs.utils.hex.toBytes(msg.toString('hex')));
             var bufM2 = Buffer.from(m2Str);
-            var CID = bufM2.subarray(16,20).swap16().toString('hex').substring(0, 7);
+            var decM2 = bufM2.subarray(16,48).swap16();
+            var CID = decM2.subarray(0, 4).swap16().toString('hex').substring(0, 7);
             return(CID);           
         }
         SHE_decrypt.prototype.getFID = (msg, key) =>

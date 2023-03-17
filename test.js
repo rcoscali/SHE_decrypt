@@ -20,42 +20,42 @@
         {
 	    var she = new SHE();
 	    var bufferM2 = Buffer.from('000000000000000000000000000000413e38f7c374d4a3f39547b556893861d251195ce2f6f3f989d6460408bda42c33ecc5c11b04af0c85f0f857b6b235a2bd', 'hex');
-	    var bufferKey = Buffer.from('7c374d4a3f39547b556893861d251195', 'hex');
-	    var decM2 = she.decrypt_M2(bufferM2, bufferKey).subarray(16,48);
-	    expect(decM2.toString('hex')).toBe('27c5364ec3eaa5568885f311cf3323e8e71595359190e722d86f7558a9219813');
-	    var cid = decM2.subarray(0, 4).toString('hex').substring(0, 7);
-	    expect(cid).toBe('27c5364');
+	    var bufferKey = Buffer.from('0153F7000099ED9F320451AA8A7D9707', 'hex');
+	    var decM2 = she.decrypt_M2(bufferM2, bufferKey).subarray(16,48).swap16();
+	    expect(decM2.toString('hex')).toBe('000011000000000000000000000041003510027f89028fad2651ba628f981111');
+	    var cid = decM2.subarray(0, 4).swap16().toString('hex').substring(0, 7);
+	    expect(cid).toBe('0000001');
 	    var fid = ((decM2[3] & 0x0F) << 1) + ((decM2[4] >> 7) & 0x01);
-	    expect(fid).toBe(29);
-	    var key = decM2.subarray(16).toString('hex');
-	    expect(key.toString('hex')).toBe('e71595359190e722d86f7558a9219813');
+	    expect(fid).toBe(2);
+	    var key = decM2.subarray(16).swap16().toString('hex');
+	    expect(key.toString('hex')).toBe('10357f020289ad8f512662ba988f1111');
         }
     );
     test('SHE_decrypt: getCID', () =>
         {
 	    var she = new SHE();
 	    var bufferM2 = Buffer.from('000000000000000000000000000000413e38f7c374d4a3f39547b556893861d251195ce2f6f3f989d6460408bda42c33ecc5c11b04af0c85f0f857b6b235a2bd', 'hex');
-	    var bufferKey = Buffer.from('7c374d4a3f39547b556893861d251195', 'hex');
+	    var bufferKey = Buffer.from('0153F7000099ED9F320451AA8A7D9707', 'hex');
 	    var CID = she.getCID(bufferM2, bufferKey);
-	    expect(CID).toBe('c5274e3');
+	    expect(CID).toBe('0000001');
         }
     );
     test('SHE_decrypt: getFID', () =>
         {
 	    var she = new SHE();
 	    var bufferM2 = Buffer.from('000000000000000000000000000000413e38f7c374d4a3f39547b556893861d251195ce2f6f3f989d6460408bda42c33ecc5c11b04af0c85f0f857b6b235a2bd', 'hex');
-	    var bufferKey = Buffer.from('7c374d4a3f39547b556893861d251195', 'hex');
+	    var bufferKey = Buffer.from('0153F7000099ED9F320451AA8A7D9707', 'hex');
 	    var FID = she.getFID(bufferM2, bufferKey);
-	    expect(FID).toBe(29);
+	    expect(FID).toBe(2);
         }
     );
     test('SHE_decrypt: getKEY', () =>
         {
 	    var she = new SHE();
 	    var bufferM2 = Buffer.from('000000000000000000000000000000413e38f7c374d4a3f39547b556893861d251195ce2f6f3f989d6460408bda42c33ecc5c11b04af0c85f0f857b6b235a2bd', 'hex');
-	    var bufferKey = Buffer.from('7c374d4a3f39547b556893861d251195', 'hex');
+	    var bufferKey = Buffer.from('0153F7000099ED9F320451AA8A7D9707', 'hex');
 	    var KEY = she.getKEY(bufferM2, bufferKey).toString('hex');
-	    expect(KEY).toBe('15e73595909122e76fd8587521a91398');
+	    expect(KEY).toBe('3510027f89028fad2651ba628f981111');
         }
     );
 })(this);
