@@ -50,32 +50,22 @@
         SHE_decrypt.prototype.KDF = this.KDF;
         SHE_decrypt.prototype.decrypt_M2 = this.decrypt_M2;
 
-        SHE_decrypt.prototype.getCID = (msg, key) =>
+        SHE_decrypt.prototype.getCID = (m2) =>
         {
-            var dk = SHE_decrypt.prototype.KDF(key);
-            var aesCbc = new aesjs.ModeOfOperation.cbc(aesjs.utils.hex.toBytes(dk.toString('hex')), aesjs.utils.hex.toBytes(SHE_decrypt.prototype.bufferIV.toString('hex')));
-            var m2Str = aesCbc.decrypt(aesjs.utils.hex.toBytes(msg.toString('hex')));
-            var bufM2 = Buffer.from(m2Str);
-            var decM2 = bufM2.subarray(16,48).swap16();
-            var CID = decM2.subarray(0, 4).swap16().toString('hex').substring(0, 7);
+            var decM2 = m2.subarray(16,48);
+            var CID = decM2.subarray(0, 4).toString('hex').substring(0, 7);
             return(CID);           
         }
-        SHE_decrypt.prototype.getFID = (msg, key) =>
+        SHE_decrypt.prototype.getFID = (m2) =>
         {
-            var dk = SHE_decrypt.prototype.KDF(key);
-            var aesCbc = new aesjs.ModeOfOperation.cbc(aesjs.utils.hex.toBytes(dk.toString('hex')), aesjs.utils.hex.toBytes(SHE_decrypt.prototype.bufferIV.toString('hex')));
-            var m2Str = aesCbc.decrypt(aesjs.utils.hex.toBytes(msg.toString('hex')));
-            var bufM2 = Buffer.from(m2Str);
-            var FID = ((bufM2[19] & 0x0F) << 1) + ((bufM2[20] >> 7) & 0x01);
+            var decM2 = m2.subarray(16,48);
+            var FID = ((decM2[3] & 0x0F) << 1) + ((decM2[4] >> 7) & 0x01);
             return(FID);
         }
-        SHE_decrypt.prototype.getKEY = (msg, key) =>
+        SHE_decrypt.prototype.getKEY = (m2) =>
         {
-            var dk = SHE_decrypt.prototype.KDF(key);
-            var aesCbc = new aesjs.ModeOfOperation.cbc(aesjs.utils.hex.toBytes(dk.toString('hex')), aesjs.utils.hex.toBytes(SHE_decrypt.prototype.bufferIV.toString('hex')));
-            var m2Str = aesCbc.decrypt(aesjs.utils.hex.toBytes(msg.toString('hex')));
-            var bufM2 = Buffer.from(m2Str);
-            var KEY = bufM2.subarray(32,48).swap16();
+            var decM2 = m2.subarray(16,48);
+            var KEY = decM2.subarray(16,48).swap16();
             return(KEY);
         }
         return(this);
