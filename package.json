@@ -2,7 +2,7 @@
   "dependencies": {
     "aes-js": "^3.1.2",
     "jest": "^29.5.0",
-    "miyaguchipreneel": "file:../MiyaguchiPreneel"
+    "miyaguchipreneel": "^1.0.1"
   },
   "name": "she_decrypt",
   "description": "Pure JavaScript implementation for deciphering SHE arguments (M1, M2, etc)",
