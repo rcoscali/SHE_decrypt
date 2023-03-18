@@ -21,7 +21,7 @@ manipulation.
    var frameKey = Buffer.from(<get your key the same way or another>, 'hex);
    var she_decrypt = new she();
    var decM2 = she_decrypt.decrypt_M2(frameBuf, frameKey);
-   var cid = she_decrypt.getCID(frameBuf, frameKey);
-   var fid = she_decrypt.getFID(frameBuf, frameKey);
-   var key = she_decrypt.getKEY(frameBuf, frameKey);
+   var cid = she_decrypt.getCID(decM2);
+   var fid = she_decrypt.getFID(decM2);
+   var key = she_decrypt.getKEY(decM2);
 ```
