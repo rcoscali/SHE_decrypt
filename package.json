@@ -6,7 +6,7 @@
   },
   "name": "she_decrypt",
   "description": "Pure JavaScript implementation for deciphering SHE arguments (M1, M2, etc)",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "SHE_decrypt.js",
   "devDependencies": {},
   "scripts": {
