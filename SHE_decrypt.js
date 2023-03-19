@@ -13,28 +13,64 @@
     
     var aesjs = require('aes-js');
     var MP = require('miyaguchipreneel');
-    
+
+    /*
+     * dk = KDF(k)
+     *
+     * Key Derivation Function used in the SHE protocol specification
+     * 
+     */
     SHE_decrypt.prototype.KDF = (k) =>
     {
-        var kb, key;
-        if (k instanceof Buffer)
-	    kb = Buffer.from(k);
-        else
-	    kb = Buffer.from(k, 'hex');
-        key = Buffer.concat([kb, SHE_decrypt.prototype.KeyUpdateEncCte]);
-        var dk = SHE_decrypt.prototype.mp.comp(SHE_decrypt.prototype.bufferIV, key);
-        return(dk);
+        return(
+            SHE_decrypt.prototype.mp.comp(
+                SHE_decrypt.prototype.bufferIV,
+                Buffer.concat(
+                    [
+                        (k instanceof Buffer ?
+                         Buffer.from(k) :
+                         Buffer.from(k, 'hex')
+                        ),
+                        SHE_decrypt.prototype.KeyUpdateEncCte
+                    ]
+                )
+            )
+        );
     }
 
+    /*
+     * bufM2 = decrypt_M2(msg, key)
+     *
+     * This method will decipher the SHE command M2 argument register 
+     * provided for a Key Provisionning.
+     * This register will also allows, when deciphered, to get CID, FID 
+     * and Key. 
+     * (see SHE protocol specification on AUTOSAR web site for details)
+     *
+     * Arguments:
+     *   msg: The message ciphered transfered in a CAN/Eth frame
+     *   key: The kMasterEcu key used for ciphering the frame
+     *
+     * Returns:
+     *   The deciphered M2 register value for SHE (Secure Hardware Extension)
+     */
     SHE_decrypt.prototype.decrypt_M2 = (msg, key) =>
     {
-        var dk = SHE_decrypt.prototype.KDF(key);
-        var aesCbc = new aesjs.ModeOfOperation.cbc(aesjs.utils.hex.toBytes(dk.toString('hex')), aesjs.utils.hex.toBytes(SHE_decrypt.prototype.bufferIV.toString('hex')));
-        var m2Str = aesCbc.decrypt(aesjs.utils.hex.toBytes(msg.toString('hex')));
-        var bufM2 = Buffer.from(m2Str);
-        return(bufM2);
+        var aesCbc =
+            new aesjs.ModeOfOperation.cbc(
+                aesjs.utils.hex.toBytes(SHE_decrypt.prototype.KDF(key).toString('hex')),
+                aesjs.utils.hex.toBytes(SHE_decrypt.prototype.bufferIV.toString('hex'))
+            );
+        var m2Str = aesCbc.decrypt(
+            aesjs.utils.hex.toBytes(msg.toString('hex'))
+        );
+        return(Buffer.from(m2Str));
     }
 
+    /*
+     * SHE_decrypt constructor
+     *
+     */
     function SHE_decrypt()
     {
         const KeyUpdateEncCte = Buffer.from('010153484500800000000000000000b0', 'hex');
@@ -50,23 +86,54 @@
         SHE_decrypt.prototype.KDF = this.KDF;
         SHE_decrypt.prototype.decrypt_M2 = this.decrypt_M2;
 
+        /*
+         * cid = getCID(m2)
+         *
+         * Extract CID from the SHE command M2 argument register
+         *
+         * Arguments:
+         *   m2: The M2 argument register of the SHE command
+         *
+         * Returns:
+         *   CID extracted from the M2 SHE command register
+         */
         SHE_decrypt.prototype.getCID = (m2) =>
         {
-            var decM2 = m2.subarray(16,48);
-            var CID = decM2.subarray(0, 4).toString('hex').substring(0, 7);
-            return(CID);           
+            return(m2.subarray(16,48).subarray(0, 4).toString('hex').substring(0, 7));           
         }
+
+        /*
+         * fid = getFID(m2)
+         *
+         * Extract FID from the SHE command M2 argument register
+         *
+         * Arguments:
+         *   m2: The M2 argument register of the SHE command
+         *
+         * Returns:
+         *   FID extracted from the M2 SHE command register
+         */
         SHE_decrypt.prototype.getFID = (m2) =>
         {
             var decM2 = m2.subarray(16,48);
-            var FID = ((decM2[3] & 0x0F) << 1) + ((decM2[4] >> 7) & 0x01);
-            return(FID);
+            return(((decM2[3] & 0x0F) << 1) + ((decM2[4] >> 7) & 0x01));
         }
+
+        /*
+         * key = getKEY(m2)
+         *
+         * Extract KEY provisionned from the SHE command M2 argument register
+         *
+         * Arguments:
+         *   m2: The M2 argument register of the SHE command
+         *
+         * Returns:
+         *   KEY extracted from the M2 SHE command register
+         */
         SHE_decrypt.prototype.getKEY = (m2) =>
         {
             var decM2 = m2.subarray(16,48);
-            var KEY = decM2.subarray(16,48).swap16();
-            return(KEY);
+            return(decM2.subarray(16,48).swap16());
         }
         return(this);
     }
