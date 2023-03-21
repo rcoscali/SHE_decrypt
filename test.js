@@ -58,7 +58,7 @@
 	    var bufferKey = Buffer.from('0153F7000099ED9F320451AA8A7D9707', 'hex');
 	    var bufM2 = she.decrypt_M2(bufferM2, bufferKey);
 	    var KEY = she.getKEY(bufM2).toString('hex');
-	    expect(KEY).toBe('3510027f89028fad2651ba628f981111');
+	    expect(KEY).toBe('10357f020289ad8f512662ba988f1111');
         }
     );
 })(this);

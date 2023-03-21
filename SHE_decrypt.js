@@ -133,7 +133,7 @@
         SHE_decrypt.prototype.getKEY = (m2) =>
         {
             var decM2 = m2.subarray(16,48);
-            return(decM2.subarray(16,48).swap16());
+            return(decM2.subarray(16,48));
         }
         return(this);
     }
